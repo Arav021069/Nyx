@@ -94,7 +94,7 @@ Typography:   JetBrains Mono / Fira Code (recommended)
 ## ✦ Roadmap
 
 ```
-Phase 1 — Core CLI & Toolset                     [ IN PROGRESS ]
+Phase 1 — Core CLI & Toolset                     [ RELEASED ]
 Phase 2 — AI Integration (Inference & Training)  [ IN PROGRESS ]
 Phase 3 — Advanced File Automation & Sorting     [ COMING SOON ]
 Phase 4 — System Monitoring Dashboard            [ COMING SOON ]
