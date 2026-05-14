@@ -1,79 +1,64 @@
 # from pathlib import Path
 import typer
+from typing import Literal
+import shutil
 
 from rich.console import Console
-from rich.table import Table
 
-from Nyx.utils.formatters import format_size, validate_directory
+from Nyx.utils.formatters import validate_directory
 
-app = typer.Typer()
+# app = typer.Typer()
 console = Console()
 
 
-@app.command()
-def files(
-    path: str,
-    all_items: bool = typer.Option(
-        False,
-        "--all",
-        "-a",
-        help="Include hidden files"
+# @app.command()
+def organize(
+    path: str = typer.Argument(None, help="Path to the directory to organize"),
+    sort_by: Literal["extension", "size", "date"] = typer.Option(
+        "extension",
+        "--by",
+        help="Organization strategy"
     ),
-    detailed: bool = typer.Option(
+    dry_run: bool = typer.Option(
         False,
-        "--detailed",
-        "-d",
-        help="Show detailed file info"
-    )
+        "--dry-run",
+        help="Preview changes without moving files"
+    ),
 ):
     """
-    Lists contents of a directory.
+    Organizes files in a directory based on the specified criteria.
     """
 
-    p = validate_directory(path)
-
-    table = Table(title=f"Contents of {p}")
-
-    table.add_column("Name", style="cyan")
-    table.add_column("Type", style="green")
-
-    if detailed:
-        table.add_column("Size")
-
-    try:
-        items = sorted(
-            p.iterdir(),
-            key=lambda x: (x.is_file(), x.name.lower())
-        )
-
-        for item in items:
-
-            if not all_items and item.name.startswith("."):
-                continue
-
-            item_type = "Folder" if item.is_dir() else "File"
-
-            if detailed and item.is_file():
-                size = item.stat().st_size
-                size_text = f"{format_size(size)}"
-
-                table.add_row(
-                    item.name,
-                    item_type,
-                    size_text
-                )
-
-            else:
-                table.add_row(
-                    item.name,
-                    item_type,
-                    # "-"
-                )
-
-    except PermissionError:
+    if not path:
         console.print(
-            "[bold yellow]Permission denied[/bold yellow]"
+            "[red]Provide a directory to organize[/red]"
         )
         raise typer.Exit()
 
-    console.print(table)
+    p = validate_directory(path)
+
+    items = list(p.iterdir())
+
+    if sort_by == "extension":
+        all_ext = set()
+
+        for item in items:
+            if item.is_file():
+                ext = item.suffix.lower()
+                all_ext.add(ext[1:])
+                if not ext:
+                    ext = "Other"
+                    all_ext.add(ext)
+
+        for ext in sorted(all_ext):
+            target = p / ext
+            for item in items:
+                if item.is_file():
+                    if item.suffix.lower() == f".{ext}":
+                        if dry_run:
+                            console.print(f"[yellow]Would move[/yellow] {item.name} to {target}")
+                        else:
+                            target.mkdir(exist_ok=True)
+
+                            target_path = target / item.name
+                            shutil.move(str(item), str(target_path))

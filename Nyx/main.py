@@ -1,6 +1,7 @@
 from importlib.metadata import version as get_version
 import typer
-from Nyx.commands import organize, stats, run, notes
+from Nyx.commands import stats, run, notes, doctor, ai
+from Nyx.commands.organize import organize
 from pathlib import Path
 import subprocess
 
@@ -40,10 +41,13 @@ def open_nyx_home():
     subprocess.run(["explorer", str(nyx_home)])
 
 
-app.add_typer(organize.app, name="organize")
+app.command()(organize)
+# app.add_typer(organize.app, name="organize")
 app.add_typer(stats.app, name="stats")
 app.add_typer(run.app, name="run")
 app.add_typer(notes.app, name="notes")
+app.add_typer(doctor.app, name="doctor", help="System health check")
+app.add_typer(ai.app, name="ai", help="AI-powered assistant")
 
 
 if __name__ == "__main__":

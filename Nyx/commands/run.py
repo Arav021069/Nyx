@@ -6,10 +6,11 @@ from rich.console import Console
 app = typer.Typer()
 console = Console()
 
+
 @app.callback(invoke_without_command=True)
 def script(
     ctx: typer.Context,
-    file: str = typer.Argument(None)
+    file: str = typer.Argument(None, help="Path to the Python script to run")
 ):
     """
     Executes a specified Python script.
@@ -18,7 +19,7 @@ def script(
         file (str): The path to the Python script to run.
         ctx (typer.Context): The context to run the script with.
     """
-    # subprocess.run(["python", file])\
+
     if file:
         subprocess.run(["python", file])
     elif ctx.invoked_subcommand is None:

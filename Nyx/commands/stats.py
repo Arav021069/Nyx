@@ -1,5 +1,5 @@
 import typer
-from pathlib import Path
+# from pathlib import Path
 from rich.table import Table
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -70,9 +70,6 @@ def folder(
         if all_items and file.is_dir():
             console.print(f"[yellow]Folder:[/yellow] {file.name}")
 
-    # print("\nFile types:")
-    # for ext, count in file_types.items():
-    #     print(f"{ext or 'no_ext'}: {count}")
     table = Table(title="File Types")
     table.add_column("Extension")
     table.add_column("Count")

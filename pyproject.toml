@@ -1,7 +1,36 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "nyx"
-version = "0.2.0"
-dependencies = ["typer", "rich"]
+version = "0.2.1"
+description = "Neoteric Yield eXecution: A minimalist command-line nexus for productivity and system intelligence."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Aarav"}
+]
+keywords = ["cli", "productivity", "notes", "organization", "system-intelligence"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License",
+    "Environment :: Console",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "typer",
+    "rich",
+]
+
+[project.urls]
+Homepage = "https://github.com/Arav021069"
+Repository = "https://github.com/Arav021069/Nyx"
 
 [project.scripts]
 nyx = "Nyx.main:app"
+
+[tool.setuptools]
+packages = ["Nyx"]

@@ -23,7 +23,7 @@ def format_size(size_bytes: int) -> str:
     return f"{size:.2f} PB"
 
 
-# TODO: Add validation for file and directory in commands
+
 def validate_directory(path: str) -> Path:
     p = Path(path)
 
