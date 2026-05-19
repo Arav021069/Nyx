@@ -46,6 +46,13 @@ A built-in note management system that lives in your home directory. Add thought
 - `nyx notes search "bugfix"`
 - `nyx notes edit`
 
+### 🤖 Neural Engine (AI)
+Integrated local model inference using Ollama. Chat with models, summarize documents, and manage your local library of LLMs.
+- `nyx ai run "llama3"` (Interactive chat)
+- `nyx ai summarize "README.md"`
+- `nyx ai pull "mistral"`
+- `nyx ai models`
+
 ### 📊 System & Folder Intelligence
 Get deep insights into your file system. NYX analyzes directory structures, calculates sizes, and breaks down file types with beautiful tabular formatting.
 - `nyx stats folder .`

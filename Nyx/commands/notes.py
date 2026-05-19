@@ -1,55 +1,68 @@
 import typer
-from pathlib import Path
+from rich.console import Console
 import subprocess
 from datetime import datetime
+import os
+import shutil
+import platform
 
+from Nyx.utils.formatters import ensure_file
+
+console = Console()
 app = typer.Typer()
-
-NOTES_FILE = Path.home() / ".nyx" / "notes.txt"
-
-
-def ensure_file():
-    NOTES_FILE.parent.mkdir(parents=True, exist_ok=True)
-    NOTES_FILE.touch(exist_ok=True)
 
 
 @app.command()
 def add(text: str):
-    ensure_file()
+    path = ensure_file()
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    with open(NOTES_FILE, "a") as f:
+    with open(path, "a") as f:
         f.write(f"[{timestamp}] {text}\n")
 
-    print("Note added.")
+    console.print("Note added.")
 
 
 @app.command()
 def list():
-    ensure_file()
-    print(NOTES_FILE.read_text())
+    path = ensure_file()
+    console.print(path.read_text())
 
 
 @app.command()
 def search(query: str):
-    ensure_file()
-    lines = NOTES_FILE.read_text().splitlines()
+    path = ensure_file()
+    lines = path.read_text().splitlines()
 
     for line in lines:
         if query.lower() in line.lower():
-            print(line)
+            console.print(line)
 
 
 @app.command()
 def clear():
-    ensure_file()
-    NOTES_FILE.write_text("")
-    print("All notes cleared.")
+    path = ensure_file()
+    path.write_text("")
+    console.print("All notes cleared.")
 
 
 @app.command()
 def edit():
-    NOTES_FILE.parent.mkdir(parents=True, exist_ok=True)
-    NOTES_FILE.touch(exist_ok=True)
+    """
+     Open the note file in the default editor.
+     """
+    path = ensure_file()
 
-    subprocess.run(["notepad", str(NOTES_FILE)])
+    editor = os.environ.get("EDITOR")
+    try:
+        if editor:
+            subprocess.run([editor, str(path)])
+
+        elif platform.system() == "Windows":
+            subprocess.run(["notepad", str(path)])
+
+        elif platform.system() in ["Linux", "Darwin"]:
+            subprocess.run(["nano", str(path)])
+
+    except FileNotFoundError:
+        console.print("Editor not found. Please set the EDITOR environment variable.")
