@@ -17,6 +17,12 @@ def check_ollama():
         ollama.list()
         return True
 
+    except ConnectionError:
+        console.print(
+            "[red]Error: Can't connect to Ollama server[/red]"
+        )
+        return False
+
     except Exception:
 
         subprocess.Popen(

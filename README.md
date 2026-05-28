@@ -54,17 +54,29 @@ Integrated local model inference using Ollama. Chat with models, summarize docum
 - `nyx ai models`
 
 ### 📊 System & Folder Intelligence
-Get deep insights into your file system. NYX analyzes directory structures, calculates sizes, and breaks down file types with beautiful tabular formatting.
+Get deep insights into your file system and hardware. NYX analyzes directory structures, calculates sizes, and monitors system resources in real-time.
 - `nyx stats folder .`
 - `nyx stats size ./data`
+- `nyx monitor` (Real-time CPU/RAM/Disk)
 
 ### 📂 Intelligent Organization
-Quickly navigate and audit your project structures. NYX identifies directories and files with clear visual cues, making directory traversal seamless.
-- `nyx organize files .`
+Quickly navigate, audit, and clean up your project structures. NYX identifies directories and files, and can automatically organize them by extension.
+- `nyx organize .`
+- `nyx organize . --dry-run`
 
 ### ⚡ Rapid Script Execution
 Execute Python scripts with zero friction. NYX handles the execution environment and provides clean error reporting through its internal runner.
 - `nyx run script.py`
+
+### 🌐 Local Web Server
+Instantly serve any directory over HTTP for testing or sharing.
+- `nyx serve`
+- `nyx serve --port 8080 --open`
+
+### 🩺 System Diagnostics & Updates
+Keep your environment healthy and stay up to date with the latest features.
+- `nyx doctor` (Check system health)
+- `nyx update` (Check for new versions)
 
 ### 🏠 Home Integration
 One command to open your Nyx configuration and workspace folder.
@@ -95,6 +107,7 @@ Typography:   JetBrains Mono / Fira Code (recommended)
 | Formatting | Rich |
 | File System | Pathlib |
 | Metadata | importlib.metadata |
+| Monitoring | psutil |
 
 ---
 
@@ -102,18 +115,18 @@ Typography:   JetBrains Mono / Fira Code (recommended)
 
 ```
 Phase 1 — Core CLI & Toolset                     [ RELEASED ]
-Phase 2 — AI Integration (Inference & Training)  [ IN PROGRESS ]
-Phase 3 — Advanced File Automation & Sorting     [ COMING SOON ]
-Phase 4 — System Monitoring Dashboard            [ COMING SOON ]
+Phase 2 — AI Integration (Ollama)                [ RELEASED ]
+Phase 3 — System Monitoring Dashboard            [ RELEASED ]
+Phase 4 — Advanced File Automation & Sorting     [ IN PROGRESS ]
 Phase 5 — Plugin & Extension API                 [ COMING SOON ]
 ```
 
 **On the horizon:**
 
-- 🤖 **Neural Engine:** Integrated local model inference for code analysis.
-- 🧹 **Auto-Organize:** Rule-based file sorting and cleanup.
-- 📈 **Telemetry:** Real-time resource usage graphs in the terminal.
+- 🧹 **Auto-Organize:** Advanced rule-based file sorting and cleanup.
+- 📉 **Telemetry:** Historical resource usage graphs in the terminal.
 - 🕸️ **Nyx Web:** A minimal web interface to sync notes across devices.
+- 🔌 **Extensions:** A simple API to build your own Nyx commands.
 
 ---
 

@@ -3,9 +3,11 @@ import typer
 from ollama import ResponseError
 from rich.console import Console
 from rich.table import Table
+import uuid
 
 from Nyx.utils.formatters import format_size, validate_file
 from Nyx.utils.ai_utils import check_ollama, get_best_model, validate_model
+from Nyx.utils.db import save_message, load_messages
 
 app = typer.Typer()
 console = Console()
@@ -62,6 +64,10 @@ def run(
     Raises:
         typer.Exit: Terminates the application when finished or upon user exit command in interactive mode.
     """
+    session_id = str(uuid.uuid4())
+
+    messages = load_messages(session_id)
+
     check_ollama()
     if not model:
         model = get_best_model()
@@ -71,15 +77,15 @@ def run(
     console.print(
         f"[bold cyan]Using model:[/bold cyan] {model}"
     )
-    messages = [
+    messages.append([
         {
             "role": "system",
             "content": "You are Nyx AI assistant..."
         }
-    ]
+    ])
 
     if prompt:
-        messages.append({"role": "user", "content": prompt})
+        # messages.append({"role": "user", "content": prompt})
 
         response = ollama.chat(
             model=model,
@@ -101,10 +107,15 @@ def run(
             if user_input == "/exit" or user_input == "/quit":
                 raise typer.Exit()
 
-            messages.append({
-                "role": "user",
-                "content": user_input
-            })
+            # messages.append({
+            #     "role": "user",
+            #     "content": user_input
+            # })
+            save_message(
+                session_id,
+                "user",
+                user_input
+            )
 
             response = ollama.chat(
                 model=model,
@@ -122,10 +133,15 @@ def run(
                     end=""
                 )
             print()
-            messages.append({
-                "role": "assistant",
-                "content": assistant_response
-            })
+            # messages.append({
+            #     "role": "assistant",
+            #     "content": assistant_response
+            # })
+            save_message(
+                session_id,
+                "assistant",
+                assistant_response
+            )
             messages = messages[-10:]
 
 
