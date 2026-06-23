@@ -75,12 +75,15 @@ def check_ollama():
     return False
 
 
-def validate_model(model):
-
-    installed = [
+def get_installed_models():
+    return [
         m.model
         for m in ollama.list()["models"]
     ]
+
+def validate_model(model):
+
+    installed = get_installed_models()
 
     if model in installed:
         return model
@@ -124,3 +127,17 @@ def get_best_model():
         raise typer.Exit(code=1)
 
     return llm["models"][0]["model"]
+
+
+def complete_models(
+    ctx,
+    param,
+    incomplete: str
+):
+    installed = get_installed_models()
+
+    return [
+        m
+        for m in installed
+        if m.startswith(incomplete)
+    ]
