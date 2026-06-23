@@ -41,7 +41,7 @@ def main(
         ╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝
         [/bold cyan]
         
-        [dim]Local AI terminal assistant[/dim]
+        [dim]Local AI terminal assistant[/dim
         ''')
 
 

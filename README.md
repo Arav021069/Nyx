@@ -73,6 +73,11 @@ Instantly serve any directory over HTTP for testing or sharing.
 - `nyx serve`
 - `nyx serve --port 8080 --open`
 
+### 👁️ File & Directory Watching
+Monitor any directory or specific file for modifications in real-time.
+- `nyx watch .`
+- `nyx watch path/to/file.txt`
+
 ### 🩺 System Diagnostics & Updates
 Keep your environment healthy and stay up to date with the latest features.
 - `nyx doctor` (Check system health)
@@ -108,6 +113,7 @@ Typography:   JetBrains Mono / Fira Code (recommended)
 | File System | Pathlib |
 | Metadata | importlib.metadata |
 | Monitoring | psutil |
+| File Watching | watchdog |
 
 ---
 

@@ -26,6 +26,7 @@ dependencies = [
     "requests",
     "packaging",
     "tomli; python_version < '3.11'",
+    "watchdog",
 ]
 
 [project.urls]
