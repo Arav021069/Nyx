@@ -6,7 +6,7 @@ from rich.table import Table
 import uuid
 
 from Nyx.utils.formatters import format_size, validate_file
-from Nyx.utils.ai_utils import check_ollama, get_best_model, validate_model
+from Nyx.utils.ai_utils import check_ollama, get_best_model, validate_model, complete_models
 from Nyx.utils.db import save_message, load_messages
 
 app = typer.Typer()
@@ -47,6 +47,7 @@ def models():
 def run(
         model: str = typer.Argument(
             None,
+            shell_complete=complete_models,
             help="Model to use for chatting"),
         prompt: str = typer.Argument(
             None,
