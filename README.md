@@ -1,5 +1,5 @@
 <div align="center">
-
+<pre>
 ```
 ███╗   ██╗██╗   ██╗██╗  ██╗
 ████╗  ██║╚██╗ ██╔╝╚██╗██╔╝
@@ -8,7 +8,7 @@
 ██║ ╚████║   ██║   ██╔╝ ██╗
 ╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝
 ```
-
+</pre>
 ### **Neoteric Yield eXecution**
 
 *The minimalist command-line nexus for productivity and system intelligence.*
@@ -60,7 +60,7 @@ Get deep insights into your file system and hardware. NYX analyzes directory str
 - `nyx monitor` (Real-time CPU/RAM/Disk)
 
 ### 📂 Intelligent Organization
-Quickly navigate, audit, and clean up your project structures. NYX identifies directories and files, and can automatically organize them by extension.
+Quickly navigate, audit, and clean up your project structures. NYX identifies directories and files and can automatically organize them by extension.
 - `nyx organize .`
 - `nyx organize . --dry-run`
 

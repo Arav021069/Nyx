@@ -2,12 +2,12 @@ from importlib.metadata import version as get_version
 import typer
 from rich.console import Console
 
-from Nyx.commands import stats, run, notes, doctor, ai, monitor, update, serve, watch
+from Nyx.commands import stats, run, notes, doctor, ai, monitor, update, serve, watch, scan
 from Nyx.commands.organize import organize
 from pathlib import Path
 import subprocess
 
-app = typer.Typer()
+app = typer.Typer(help="Nyx: A terminal assistant for developers.")
 console = Console()
 
 
@@ -69,6 +69,7 @@ app.add_typer(monitor.app, name="monitor", help="System monitor")
 app.add_typer(update.app, name="update", help="Update Nyx to the latest version")
 app.add_typer(serve.app, name="serve", help="Serve a directory as a static site")
 app.add_typer(watch.app, name="watch", help="Watch a directory for changes")
+app.add_typer(scan.app, name="scan", help="Scan a directory for sensitive information")
 
 if __name__ == "__main__":
     app()

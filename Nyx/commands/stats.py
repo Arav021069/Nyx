@@ -62,13 +62,13 @@ def folder(
                     f"[yellow]Skipped:[/yellow] {file}"
                 )
 
-        ext = file.suffix.lower()
-        if not ext or len(ext) > 10:
-            ext = "unknown"
-        file_types[ext] = file_types.get(ext, 0) + 1
+            ext = file.suffix.lower()
+            if not ext or len(ext) > 10:
+                ext = "unknown"
+            file_types[ext] = file_types.get(ext, 0) + 1
 
-        if all_items and file.is_dir():
-            console.print(f"[yellow]Folder:[/yellow] {file.name}")
+            if all_items and file.is_dir():
+                console.print(f"[yellow]Folder:[/yellow] {file.name}")
 
     table = Table(title="File Types")
     table.add_column("Extension")

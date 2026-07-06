@@ -4,12 +4,14 @@ from ollama import ResponseError
 from rich.console import Console
 from rich.table import Table
 import uuid
+from pathlib import Path
 
 from Nyx.utils.formatters import format_size, validate_file
-from Nyx.utils.ai_utils import check_ollama, get_best_model, validate_model, complete_models
+from Nyx.utils.ai_utils import check_ollama, get_best_model, validate_model, complete_models, _stream_ai_response
 from Nyx.utils.db import save_message, load_messages
+from Nyx.services.ai_service import gather_project_anomalies
 
-app = typer.Typer()
+app = typer.Typer(help="Interact with a language model")
 console = Console()
 
 
@@ -36,8 +38,8 @@ def models():
                 )
 
             console.print(table)
-        except ConnectionError:
-            console.print("[red]Error: Can't connect to ollama[/red]")
+        except ConnectionError as e:
+            console.print(f"[red]Error: {e}[/red]")
 
     else:
         raise typer.Exit()
@@ -55,95 +57,72 @@ def run(
 ):
     """
     Command to interact with a language model by providing a prompt or engaging in an interactive session.
-    If a prompt is provided, the model responds to it directly. Without a prompt, the user enters an
-    interactive conversation. The active model is displayed at the start.
-
-    Arguments:
-        model (str): Model to use for chatting. Required and must be specified
-        prompt (str): Prompt to send to the model. If not provided, enters interactive mode
-
-    Raises:
-        typer.Exit: Terminates the application when finished or upon user exit command in interactive mode.
     """
     session_id = str(uuid.uuid4())
 
     messages = load_messages(session_id)
 
-    check_ollama()
-    if not model:
-        model = get_best_model()
-    else:
-        model = validate_model(model)
+    if check_ollama():
+        if not model:
+            model = get_best_model()
+        else:
+            model = validate_model(model)
 
-    console.print(
-        f"[bold cyan]Using model:[/bold cyan] {model}"
-    )
-    messages.append([
-        {
-            "role": "system",
-            "content": "You are Nyx AI assistant..."
-        }
-    ])
-
-    if prompt:
-        # messages.append({"role": "user", "content": prompt})
-
-        response = ollama.chat(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            stream=True
+        console.print(
+            f"[bold cyan]Using model:[/bold cyan] {model}"
+        )
+        messages.append(
+            {
+                "role": "system",
+                "content": "You are Nyx, a helpful local terminal AI assistant."
+            }
         )
 
-        for chunk in response:
-            console.print(
-                chunk["message"]["content"],
-                end=""
-            )
-        raise typer.Exit()
+        if prompt:
+            messages.append({"role": "user", "content": prompt})
+            _stream_ai_response(model, messages)
+            raise typer.Exit(code=1)
 
-    else:
+        else:
 
-        while True:
-            user_input = input(">>> ").strip()
-            if user_input == "/exit" or user_input == "/quit":
-                raise typer.Exit()
+            while True:
+                console.print("[green]>>> [/green]", end="")
+                user_input = input("").strip()
+                if user_input == "/exit" or user_input == "/quit":
+                    raise typer.Exit()
 
-            # messages.append({
-            #     "role": "user",
-            #     "content": user_input
-            # })
-            save_message(
-                session_id,
-                "user",
-                user_input
-            )
-
-            response = ollama.chat(
-                model=model,
-                messages=messages,
-                stream=True
-            )
-            assistant_response = ""
-            for chunk in response:
-                content = chunk["message"]["content"]
-
-                assistant_response += content
-
-                console.print(
-                    content,
-                    end=""
+                messages.append({
+                    "role": "user",
+                    "content": user_input
+                })
+                save_message(
+                    session_id,
+                    "user",
+                    user_input
                 )
-            print()
-            # messages.append({
-            #     "role": "assistant",
-            #     "content": assistant_response
-            # })
-            save_message(
-                session_id,
-                "assistant",
-                assistant_response
-            )
-            messages = messages[-10:]
+
+                response = ollama.chat(
+                    model=model,
+                    messages=messages,
+                    stream=True
+                )
+                assistant_response = ""
+                for chunk in response:
+                    content = chunk["message"]["content"]
+                    assistant_response += content
+                    console.print(content, end="")
+                print()
+                messages.append({
+                    "role": "assistant",
+                    "content": assistant_response
+                })
+                save_message(
+                    session_id,
+                    "assistant",
+                    assistant_response
+                )
+                if len(messages) > 10:
+                    messages = [messages[0]] + messages[-9:]
 
 
 @app.command()
@@ -159,24 +138,10 @@ def summarize(
 ):
     """
     Summarizes the content of a text file using a specified or default summarization model.
-
-    Parameters:
-        model (str): The specific model to use for summarization. If not provided,
-            the best model is selected automatically
-        path (str): The file path to the text file that needs to be summarized.
-
-    Raises:
-        typer.Exit: Exits with an error code if an issue occurs during the summarization
-            process, such as a failed response from the model.
     """
 
     p = validate_file(path.strip())
-
-    text = p.read_text(
-        encoding="utf-8",
-        errors="ignore"
-    )
-
+    text = p.read_text(encoding="utf-8", errors="ignore")
     max_chars = 10_000
     text = text[:max_chars]
 
@@ -187,34 +152,12 @@ def summarize(
 
     if not model:
         model = get_best_model()
-    console.print(
-        f"[cyan]Using model:[/cyan] {model}"
-    )
+    else:
+        model = validate_model(model)
+
+    console.print(f"[cyan]Using model:[/cyan] {model}")
     if check_ollama():
-        try:
-            response = ollama.chat(
-                model=model,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                stream=True
-            )
-            for chunk in response:
-                console.print(
-                    chunk["message"]["content"],
-                    end=""
-                )
-            print("\n")
-        except ollama.ResponseError as e:
-
-            console.print(
-                f"[red]Error:[/red] {e}"
-            )
-
-            raise typer.Exit(code=1)
+        _stream_ai_response(model, [{"role": "user", "content": prompt}])
 
 
 @app.command()
@@ -225,22 +168,6 @@ def pull(
 ):
     """
     Pull a specified model from the repository.
-
-    Summary:
-    This command attempts to pull the specified model by its name. If the repository
-    is accessible and the model name is valid, it downloads the model and indicates
-    successful completion. In case of an error, it provides a descriptive message
-    and exits the command with a non-zero status code.
-
-    Args:
-        model (str): Name of the model to be pulled. This is a required argument.
-
-    Raises:
-        typer.BadParameter: Raised when the model name is empty or invalid
-        typer.Exit: Rose with a non-zero exit code in case of an error
-
-    Return:
-        None
     """
     if check_ollama():
         try:
@@ -252,5 +179,56 @@ def pull(
 
         except ResponseError as e:
             console.print(f"[red]Error: {e}[/red]")
-
             raise typer.Exit(code=1)
+
+
+@app.command()
+def scan(
+        model: str = typer.Option(
+            None,
+            "--model",
+            "-m",
+            help="Model to use for auditing"),
+        path: str = typer.Argument(
+            ...,
+            help="Path to the project to scan")
+):
+    """
+    AI-powered project audit. Scans for technical debt, secrets, and bloat,
+    then uses a language model to provide a professional fix plan.
+    """
+    # 1. Validate directory
+    # We use validate_file logic but check for directory
+    p = Path(path.strip()).resolve()
+    if not p.exists() or not p.is_dir():
+        console.print("[bold red]Error:[/bold red] Valid project directory is required.")
+        raise typer.Exit(code=1)
+
+    # 2. Gather report
+    anomaly_report = gather_project_anomalies(p)
+
+    # 3. Resolve Model
+    if not model:
+        model = get_best_model()
+    else:
+        model = validate_model(model)
+
+    # 4. Setup Professional Audit Prompt
+    messages = [
+        {
+            "role": "system", 
+            "content": "You are a Senior Project Auditor. Analyze the following project anomalies and provide a concise, actionable fix plan. Focus on security first, then technical debt, then bloat."
+        },
+        {
+            "role": "user", 
+            "content": f"PROJECT AUDIT REPORT:\n{anomaly_report}"
+        }
+    ]
+
+    console.print(f"[bold magenta]NYX AI Auditor is analyzing {p.name}...[/bold magenta]\n")
+    if check_ollama():
+        _stream_ai_response(model, messages)
+
+
+if __name__ == "__main__":
+    app()

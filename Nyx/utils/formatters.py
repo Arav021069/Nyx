@@ -5,7 +5,7 @@ from rich.console import Console
 console = Console()
 
 
-def format_size(size_bytes: int) -> str:
+def format_size(size_bytes: int, byte_unit: str = None) -> str:
     """
     Converts bytes into a human-readable format.
     """
@@ -18,14 +18,18 @@ def format_size(size_bytes: int) -> str:
         if size < 1024:
             return f"{size:.2f} {unit}"
 
+        if byte_unit is not None and byte_unit == unit:
+            return f"{size:.2f} {unit}"
+
         size /= 1024
 
     return f"{size:.2f} PB"
 
 
-def validate_path(path: str) -> Path:
+def validate_path(path: str | Path) -> Path:
+    """checks if the path exists and is a valid path"""
 
-    p = Path(path)
+    p = Path(path).resolve()
 
     if not p.exists():
         console.print(
@@ -37,6 +41,7 @@ def validate_path(path: str) -> Path:
 
 
 def validate_directory(path: str) -> Path:
+    """checks if the path is a valid directory"""
     p = validate_path(path)
 
     if not p.is_dir():
@@ -49,7 +54,7 @@ def validate_directory(path: str) -> Path:
 
 
 def validate_file(path: str) -> Path:
-
+    """checks if the path is a valid file"""
     p = validate_path(path)
 
     if not p.is_file():

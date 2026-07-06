@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nyx"
-version = "0.3.1"
+version = "0.3.2"
 description = "Neoteric Yield eXecution: A minimalist command-line nexus for productivity and system intelligence."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -27,6 +27,8 @@ dependencies = [
     "packaging",
     "tomli; python_version < '3.11'",
     "watchdog",
+    "ollama>=0.6.2",
+    "psutil>=7.2.2",
 ]
 
 [project.urls]

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYX — Neoteric Yield eXecution</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0A0A16;
+            --primary: #1A1A2E;
+            --accent-start: #6A0DAD;
+            --accent-end: #A020F0;
+            --accent-glow: rgba(160, 32, 240, 0.4);
+            --text-main: #E2E2EC;
+            --text-muted: #8E8EA8;
+            --success: #00FF88;
+            --success-glow: rgba(0, 255, 136, 0.4);
+            --card-bg: rgba(26, 26, 46, 0.45);
+            --card-border: rgba(160, 32, 240, 0.15);
+            --terminal-bg: #0D0D1F;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(106, 13, 173, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(160, 32, 240, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, #0d0d21 0%, #05050f 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #05050f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-start);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-end);
+        }
+
+        header {
+            width: 100%;
+            max-width: 1100px;
+            padding: 2rem 1.5rem 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #FFF 0%, var(--accent-end) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 255, 136, 0.08);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--success);
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.05);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 var(--success-glow);
+            animation: pulse 1.6s infinite cubic-bezier(0.66, 0, 0, 1);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 var(--success-glow);
+            }
+            70% {
+                box-shadow: 0 0 0 6px rgba(0, 255, 136, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
+            }
+        }
+
+        main {
+            width: 100%;
+            max-width: 900px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .hero-section {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ascii-art {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.15;
+            color: var(--accent-end);
+            text-shadow: 0 0 15px var(--accent-glow);
+            margin-bottom: 1rem;
+            user-select: none;
+            background: linear-gradient(135deg, #FFF 10%, var(--accent-end) 90%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.95;
+            white-space: pre;
+        }
+
+        .tagline {
+            font-size: 1.4rem;
+            font-weight: 300;
+            color: var(--text-main);
+            max-width: 600px;
+            letter-spacing: 0.5px;
+        }
+
+        .quote {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-style: italic;
+            border-left: 2px solid var(--accent-start);
+            padding-left: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .dashboard {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-end), transparent);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .terminal-container {
+            background-color: var(--terminal-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .terminal-header {
+            background-color: rgba(255, 255, 255, 0.02);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .terminal-btn {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .btn-red { background-color: #FF5F56; }
+        .btn-yellow { background-color: #FFBD2E; }
+        .btn-green { background-color: #27C93F; }
+
+        .terminal-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .terminal-body {
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #C5C5D2;
+        }
+
+        .line {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .prompt {
+            color: var(--accent-end);
+            user-select: none;
+        }
+
+        .cmd {
+            color: #FFF;
+        }
+
+        .output {
+            color: var(--text-muted);
+            padding-left: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 600px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            .ascii-art {
+                font-size: 0.6rem;
+            }
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .feature-card:hover {
+            background: rgba(160, 32, 240, 0.04);
+            border-color: rgba(160, 32, 240, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #FFF;
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .copy-banner {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--success);
+            margin-top: 1rem;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            height: 1rem;
+        }
+
+        footer {
+            width: 100%;
+            max-width: 1100px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .star-link {
+            color: var(--accent-end);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .star-link:hover {
+            color: #FFF;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <div class="brand-logo">NYX</div>
+        </div>
+        <div class="status-badge">
+            <div class="pulse-dot"></div>
+            <span>NYX SERVER ACTIVE</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero-section">
+            <div class="ascii-art">
+                ███╗   ██╗██╗   ██╗██╗  ██╗
+                ████╗  ██║╚██╗ ██╔╝╚██╗██╔╝
+                ██╔██╗ ██║ ╚████╔╝  ╚███╔╝
+                ██║╚██╗██║  ╚██╔╝   ██╔██╗
+                ██║ ╚████║   ██║   ██╔╝ ██╗
+                ╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝
+            </div>
+            <p class="tagline">Neoteric Yield eXecution</p>
+            <p class="quote">"In the silence of the void, efficiency thrives."</p>
+        </div>
+
+        <div class="dashboard">
+            <div>
+                <div class="section-title">Terminal Quick Start</div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0 1rem 0;">Click on any command to copy it to clipboard</p>
+                <div class="terminal-container">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <div class="terminal-btn btn-red"></div>
+                            <div class="terminal-btn btn-yellow"></div>
+                            <div class="terminal-btn btn-green"></div>
+                        </div>
+                        <div class="terminal-title">nyx@workspace:~</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div style="cursor: pointer;" onclick="copyCmd('nyx notes add &quot;Hello Nyx&quot;')">
+                            <div class="line"><span class="prompt">$</span><span class="cmd">nyx notes add "Hello Nyx"</span></div>
+                            <div class="output">Added persistent developer note.</div>
+                        </div>
+                        <div style="cursor: pointer;" onclick="copyCmd('nyx ai run &quot;llama3&quot;')">
+                            <div class="line"><span class="prompt">$</span><span class="cmd">nyx ai run "llama3"</span></div>
+                            <div class="output">Launch direct chat with local AI models via Ollama.</div>
+                        </div>
+                        <div style="cursor: pointer;" onclick="copyCmd('nyx monitor')">
+                            <div class="line"><span class="prompt">$</span><span class="cmd">nyx monitor</span></div>
+                            <div class="output">Open system telemetry diagnostic dashboard.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="copy-banner" id="copy-banner">Command copied to clipboard!</div>
+            </div>
+
+            <div>
+                <div class="section-title">Core Intelligence Capabilities</div>
+                <div style="height: 1rem;"></div>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <div class="feature-name">Persistent Notes</div>
+                        <div class="feature-desc">Note-taking directly in the terminal database with rapid retrieval.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <div class="feature-name">Neural Engine (AI)</div>
+                        <div class="feature-desc">Integrated local LLM inference, summaries, and model management.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-name">Folder & System Intel</div>
+                        <div class="feature-desc">Instantly audit directory sizes and resource consumption graphs.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-name">Rapid Script Execution</div>
+                        <div class="feature-desc">Execute Python files cleanly with zero-friction runtime monitoring.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div>MIT — Licensed under the stars.</div>
+        <div>Built for speed. Styled for the dark. <a href="https://github.com/Arav021069/Nyx" class="star-link" target="_blank">View Repository</a></div>
+    </footer>
+
+    <script>
+        function copyCmd(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const banner = document.getElementById('copy-banner');
+                banner.style.opacity = '1';
+                setTimeout(() => {
+                    banner.style.opacity = '0';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

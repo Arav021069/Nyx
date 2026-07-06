@@ -17,9 +17,9 @@ def check_ollama():
         ollama.list()
         return True
 
-    except ConnectionError:
+    except ConnectionError as e:
         console.print(
-            "[red]Error: Can't connect to Ollama server[/red]"
+            f"[red]Error: {e}[/red]"
         )
         return False
 
@@ -75,15 +75,16 @@ def check_ollama():
     return False
 
 
-def get_installed_models():
+def get_model_names():
     return [
         m.model
         for m in ollama.list()["models"]
     ]
 
+
 def validate_model(model):
 
-    installed = get_installed_models()
+    installed = get_model_names()
 
     if model in installed:
         return model
@@ -111,22 +112,30 @@ def validate_model(model):
 
 def get_best_model():
     llm = ollama.list()
+    models_installed = [m.model for m in llm["models"]]
 
-    # PREFERRED_MODELS = [
-    #     "llama3",
-    #     "llama3.1",
-    #     "mistral",
-    #     "qwen",
-    #     "gemma"
-    # ]
-
-    if not llm:
+    if not models_installed:
         console.print(
             "[red]No Ollama models installed[/red]"
         )
+        console.print("run `nyx ai pull [MODEL NAME]` to install models")
         raise typer.Exit(code=1)
 
-    return llm["models"][0]["model"]
+    PREFERRED_MODELS = [
+        "llama3.1", 
+        "llama3", 
+        "mistral", 
+        "qwen2.5", 
+        "gemma2", 
+        "phi3"
+    ]
+
+    for preferred in PREFERRED_MODELS:
+        for installed in models_installed:
+            if installed.startswith(preferred):
+                return installed
+
+    return models_installed[0]
 
 
 def complete_models(
@@ -134,10 +143,29 @@ def complete_models(
     param,
     incomplete: str
 ):
-    installed = get_installed_models()
+    installed = get_model_names()
 
     return [
         m
         for m in installed
         if m.startswith(incomplete)
     ]
+
+
+def _stream_ai_response(model: str, messages: list):
+    """Helper to handle the streaming response from Ollama."""
+    try:
+        response = ollama.chat(
+            model=model,
+            messages=messages,
+            stream=True
+        )
+        for chunk in response:
+            console.print(
+                chunk["message"]["content"],
+                end=""
+            )
+        print("\n")
+    except ollama.ResponseError as e:
+        console.print(f"[red]Error:[/red] {e}")
+        raise typer.Exit(code=1)

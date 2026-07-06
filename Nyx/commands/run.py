@@ -1,5 +1,6 @@
 import typer
 import subprocess
+import shlex
 from rich.console import Console
 
 
@@ -21,7 +22,13 @@ def script(
     """
 
     if file:
-        subprocess.run(["python", file])
+        try:
+            command = shlex.quote(file)
+            subprocess.run([str(command)], check=True)
+        except subprocess.CalledProcessError as e:
+            console.print(f"[red]Program exited with error code {e.returncode}[/red]")
+        except Exception as e:
+            console.print(f"[red]An unexpected error occurred: {e}[/red]")
     elif ctx.invoked_subcommand is None:
         console.print("[red]Provide a file to run[/red]")
 
